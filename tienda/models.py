@@ -14,26 +14,11 @@ class Cliente(models.Model):
     def __str__(self):
         return self.nombre
 
-# class Usuario(models.Model):
-#     ROLES = [
-#         ('ADMIN', 'Administrador'),
-#         ('CLIENTE', 'Cliente'),
-#         ('VENDEDOR', 'Vendedor'),
-#     ]
-#     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-#     username = models.CharField(max_length=50, unique=True, null=False)
-#     password = models.CharField(max_length=255, null=False)  # En producción usar hash
-#     rol = models.CharField(max_length=20, choices=ROLES, null=False)
-
-#     def __str__(self):
-#         return self.username
-
 
 class Usuario(AbstractUser):
     ROLES = [
         ('ADMIN', 'Administrador'),
         ('CLIENTE', 'Cliente'),
-        ('VENDEDOR', 'Vendedor'),
     ]
 
     rol = models.CharField(max_length=20, choices=ROLES, null=False)

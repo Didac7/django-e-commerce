@@ -6,39 +6,37 @@ class ClienteSerializer(serializers.ModelSerializer):
         model = Cliente
         fields = '__all__'
 
-# class UsuarioRegistroSerializer(serializers.ModelSerializer):
-#     password2 = serializers.CharField(write_only=True)
-
-#     class Meta:
-#         model = Usuario  # Usamos tu modelo Usuario
-#         fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
-
-#     def validate(self, data):
-#         if data['password'] != data['password2']:
-#             raise serializers.ValidationError("Las contraseñas no coinciden.")
-#         return data
-
-#     def create(self, validated_data):
-#         validated_data.pop('password2')  # No guardamos 'password2'
-#         usuario = Usuario.objects.create_user(**validated_data)
-#         return usuario
-
 class UsuarioRegistroSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
 
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
-
+        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name', 'rol']
+    
+    # Validación para asegurar que las contraseñas coinciden
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Las contraseñas no coinciden.")
         return data
 
+    # Crear el usuario, y si es necesario, crear un Cliente si el rol es CLIENTE
     def create(self, validated_data):
         validated_data.pop('password2')  # No guardamos 'password2'
+        rol = validated_data.get('rol', 'USER')  # Asignamos 'USER' como rol por defecto
+
+        # Si el rol es 'CLIENTE', creamos un cliente relacionado
+        if rol == 'USER':
+            cliente = Cliente.objects.create(
+                nombre=validated_data.get('first_name', '') + ' ' + validated_data.get('last_name', ''),
+                email=validated_data['email'],
+                direccion="Dirección por defecto"
+            )
+            validated_data['cliente'] = cliente  # Asociamos el cliente al usuario
+
+        # Creamos el usuario usando el método `create_user` de Django
         usuario = Usuario.objects.create_user(**validated_data)
         return usuario
+
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:

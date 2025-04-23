@@ -2,10 +2,71 @@ from django.shortcuts import render
 
 # Create your views here.
 
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import json
+# from django.contrib.auth import authenticate
+
+# @csrf_exempt
+# def login_usuario(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         username = data.get('username')
+#         password = data.get('password')
+#         user = authenticate(username=username, password=password)
+
+#         if user is not None:
+#             return JsonResponse({'message': 'Login exitoso', 'username': user.username})
+#         else:
+#             return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
+#     else:
+#         return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+
+
+
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import json
+# from django.contrib.auth import authenticate
+# from django.contrib.auth import get_user_model
+
+# User = get_user_model()  # ← Esto carga tu modelo personalizado (Usuario de tienda)
+
+# @csrf_exempt
+# def login_usuario(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         username = data.get('username')
+#         password = data.get('password')
+#         user = authenticate(username=username, password=password)
+
+#         if user is not None:
+#             return JsonResponse({
+#                 'message': 'Login exitoso',
+#                 'username': user.username,
+#                 'rol': user.rol  # ← Devolvemos el rol desde tu modelo personalizado
+#             })
+#         else:
+#             return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
+#     else:
+#         return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+
+
+
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # Esto carga tu modelo personalizado (Usuario de tienda)
 
 @csrf_exempt
 def login_usuario(request):
@@ -13,11 +74,23 @@ def login_usuario(request):
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
+        print(f"Recibido: username={username}, password={password}")
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            return JsonResponse({'message': 'Login exitoso', 'username': user.username})
+            # Verificar si el usuario es administrador
+            print(f"Usuario autenticado: {user.username}, Rol: {user.rol}")
+            is_admin = user.rol == 'ADMIN'
+            print(f"Es admin: {is_admin}")
+            return JsonResponse({
+                'message': 'Login exitoso',
+                'username': user.username,
+                'rol': user.rol,
+                'is_admin': is_admin  # Devolvemos si es administrador
+            })
         else:
+            print("Credenciales inválidas")
             return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
     else:
-        return JsonResponse({'error': 'Método no permitido'}, status=405)
+            print("Método no permitido")
+            return JsonResponse({'error': 'Método no permitido'}, status=405)
