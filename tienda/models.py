@@ -1,5 +1,3 @@
-from django.db import models
-
 # Create your models here.
 
 from django.contrib.auth.models import AbstractUser
@@ -42,6 +40,7 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     stock = models.PositiveIntegerField(null=False)
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True)
+    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)  
 
     def __str__(self):
         return self.nombre

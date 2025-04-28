@@ -9,7 +9,7 @@ from .serializers import (ClienteSerializer, UsuarioSerializer, CategoriaSeriali
                           CarritoSerializer, DetalleCarritoSerializer, PedidoSerializer, DetallePedidoSerializer,
                           PagoSerializer, EnvioSerializer, UsuarioRegistroSerializer )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView
@@ -37,10 +37,16 @@ class ProductoViewSet(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer
     permission_classes = [AllowAny]  # Permitir acceso público para ver productos
 
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]  # Solo admin puede modificar
-        return super().get_permissions()
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context   
+
+    # def get_permissions(self):
+    #     if self.action in ['create', 'update', 'partial_update', 'destroy']:
+    #         return [IsAdminUser()]  # Solo admin puede modificar
+    #     #return super().get_permissions()
+    #     return [AllowAny()]
     
     @action(detail=False, methods=['get'])
     def por_categoria(self, request):

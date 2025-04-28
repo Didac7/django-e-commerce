@@ -51,10 +51,21 @@ class CategoriaSerializer(serializers.ModelSerializer):
 
 class ProductoSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.ReadOnlyField(source='categoria.nombre')
+    #imagen = serializers.ImageField(required=False)
+    imagen = serializers.SerializerMethodField()
     
     class Meta:
         model = Producto
         fields = '__all__'
+
+    def get_imagen(self, obj):
+        request = self.context.get('request')
+        if obj.imagen:
+            imagen_url = obj.imagen.url
+            if request is not None:
+                return request.build_absolute_uri(imagen_url)
+            return imagen_url
+        return None
 
 class DetalleCarritoSerializer(serializers.ModelSerializer):
     producto_nombre = serializers.ReadOnlyField(source='producto.nombre')

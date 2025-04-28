@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tienda_virtual',  # Nombre de la base de datos
         'USER': 'postgres',        # Usuario de PostgreSQL
-        'PASSWORD': 'diego',  # Contraseña de PostgreSQL
+        'PASSWORD': '12345',  # Contraseña de PostgreSQL
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -171,3 +172,6 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'tienda.Usuario'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
