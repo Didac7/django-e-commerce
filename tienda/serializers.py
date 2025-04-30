@@ -47,25 +47,38 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
-        fields = '__all__'
+        #fields = '__all__'
+        fields = ['id', 'nombre', 'descripcion']
 
 class ProductoSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.ReadOnlyField(source='categoria.nombre')
     #imagen = serializers.ImageField(required=False)
-    imagen = serializers.SerializerMethodField()
+    #imagen = serializers.SerializerMethodField()
     
     class Meta:
         model = Producto
         fields = '__all__'
 
-    def get_imagen(self, obj):
-        request = self.context.get('request')
-        if obj.imagen:
-            imagen_url = obj.imagen.url
-            if request is not None:
-                return request.build_absolute_uri(imagen_url)
-            return imagen_url
-        return None
+    # def get_imagen(self, obj):
+    #     request = self.context.get('request')
+    #     if obj.imagen:
+    #         imagen_url = obj.imagen.url
+    #         if request is not None:
+    #             return request.build_absolute_uri(imagen_url)
+    #         return imagen_url
+    #     return None
+
+    def create(self, validated_data):
+        imagen = self.context['request'].FILES.get('imagen')
+        if imagen:
+            validated_data['imagen'] = imagen
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        imagen = self.context['request'].FILES.get('imagen')
+        if imagen:
+            validated_data['imagen'] = imagen
+        return super().update(instance, validated_data)
 
 class DetalleCarritoSerializer(serializers.ModelSerializer):
     producto_nombre = serializers.ReadOnlyField(source='producto.nombre')

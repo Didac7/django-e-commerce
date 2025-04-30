@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include  # importa include
 from rest_framework.authtoken.views import obtain_auth_token
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls.static import static # type: ignore
 
 urlpatterns = [
     path('admin/', admin.site.urls),

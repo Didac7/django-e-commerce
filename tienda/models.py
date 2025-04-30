@@ -2,6 +2,8 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from decimal import Decimal
+
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length=255, null=False)
@@ -59,6 +61,25 @@ class DetalleCarrito(models.Model):
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre}"
 
+# class Pedido(models.Model):
+#     ESTADOS = [
+#         ('PENDIENTE', 'Pendiente'),
+#         ('PAGADO', 'Pagado'),
+#         ('ENVIADO', 'Enviado'),
+#         ('ENTREGADO', 'Entregado'),
+#         ('CANCELADO', 'Cancelado'),
+#     ]
+#     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+#     fecha = models.DateTimeField(auto_now_add=True)
+#     estado = models.CharField(max_length=20, choices=ESTADOS, null=False)
+
+#     factura_nombre = models.CharField(max_length=255, blank=True, null=True)
+#     factura_nit = models.CharField(max_length=50, blank=True, null=True)
+#     factura_direccion = models.TextField(blank=True, null=True)
+
+#     def __str__(self):
+#         return f"Pedido #{self.id} - {self.cliente.nombre}"
+
 class Pedido(models.Model):
     ESTADOS = [
         ('PENDIENTE', 'Pendiente'),
@@ -67,12 +88,20 @@ class Pedido(models.Model):
         ('ENTREGADO', 'Entregado'),
         ('CANCELADO', 'Cancelado'),
     ]
+    
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS, null=False)
+    estado = models.CharField(max_length=20, choices=ESTADOS, null=False, default='PENDIENTE')
+
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))  # ✅ necesario
+
+    factura_nombre = models.CharField(max_length=255, blank=True, null=True)
+    factura_nit = models.CharField(max_length=50, blank=True, null=True)
+    factura_direccion = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Pedido #{self.id} - {self.cliente.nombre}"
+
 
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='detalles')
